@@ -65,10 +65,27 @@ def exchange_code_for_token(request):
     
     token = request.GET.get('token')
     tkn = Token.objects.get(key=token)
+    user = tkn.user
 
     OAuthKey.objects.get_or_create(
-        user=tkn.user,
+        user=user,
         defaults=token_data
     )
+    
+    tkn.delete()
+    new_token = Token.objects.create(user=user)
 
     return JsonResponse({'status': 'success', 'message': 'Keys added'})
+
+@custom_login_required
+def register_all_devices(request):
+    try:
+        token = request.GET.get('token')
+        user = token.user
+        register_allDevice(user)
+        token.delete()
+        new_token = Token.objects.create(user=user)
+        return JsonResponse({'status': 'success', 'message': 'Devices have been added successfully or already exist'})
+    
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
