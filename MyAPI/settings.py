@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load parameters .env
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +26,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9k*h4th3ik1qt@qy(d=@v_=(d0j5o@oo!q=!$&dfkp0+v@kxy4'
+SECRET_KEY = os.getenv("DJANGO_KEY")
+
+# Yandex OAUTH Keys
+YANDEX_OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID_YA")
+YANDEX_OAUTH2_SECRET_KEY = os.getenv("SECRET_KEY_YA")
+YANDEX_OAUTH2_REDIRECT_URI = os.getenv("REDIRECT_URI")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
