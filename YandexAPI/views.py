@@ -8,6 +8,8 @@ from django.conf import settings
 
 from rest_framework.authtoken.models import Token
 
+from YandexAPI.utils import register_allDevice
+
 from .models import OAuthKey
 
 CLIENT_ID = settings.YANDEX_OAUTH2_CLIENT_ID
@@ -73,7 +75,7 @@ def exchange_code_for_token(request):
     )
     
     tkn.delete()
-    new_token = Token.objects.create(user=user)
+    Token.objects.create(user=user)
 
     return JsonResponse({'status': 'success', 'message': 'Keys added'})
 
@@ -81,10 +83,11 @@ def exchange_code_for_token(request):
 def register_all_devices(request):
     try:
         token = request.GET.get('token')
-        user = token.user
+        tkn = Token.objects.get(key=token)
+        user = tkn.user
         register_allDevice(user)
-        token.delete()
-        new_token = Token.objects.create(user=user)
+        tkn.delete()
+        Token.objects.create(user=user)
         return JsonResponse({'status': 'success', 'message': 'Devices have been added successfully or already exist'})
     
     except Exception as e:
