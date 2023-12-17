@@ -36,21 +36,14 @@ jobs:
         echo "DEBUG=${{ secrets.DEBUG }}" >> .env
 
 
-    - name: Build and push Docker image
+    - name: Build
       run: |
         docker-compose build
-        docker-compose up -d
-
-  deploy_locally:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Deploy to local machine
+    
+    - name: Run
       run: |
-        git clone https://github.com/Mishazx/MySuperAPI
-        cd MySuperAPI
         docker-compose up -d
+
+    - name: Time
+      run: |
+        docker-compose logs
