@@ -18,6 +18,24 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Create .env file from template
+      run: |
+        cp .env.template .env
+        echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+        echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+        echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+        echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" >> .env
+        echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
+        echo "DJANGO_KEY=${{ secrets.DJANGO_KEY }}" >> .env
+        echo "CLIENT_ID_YA=${{ secrets.CLIENT_ID_YA }}" >> .env
+        echo "SECRET_KEY_YA=${{ secrets.SECRET_KEY_YA }}" >> .env
+        echo "REDIRECT_URI=${{ secrets.REDIRECT_URI }}" >> .env
+        echo "DJANGO_SUPERUSER_USERNAME=${{ secrets.DJANGO_SUPERUSER_USERNAME }}" >> .env
+        echo "DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }}" >> .env
+        echo "DJANGO_SUPERUSER_EMAIL=${{ secrets.DJANGO_SUPERUSER_EMAIL }}" >> .env
+        echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+
+
     - name: Build and push Docker image
       run: |
         docker-compose build
