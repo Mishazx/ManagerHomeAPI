@@ -43,6 +43,7 @@ jobs:
 
   deploy_locally:
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
     - name: Checkout repository
@@ -50,7 +51,6 @@ jobs:
 
     - name: Deploy to local machine
       run: |
-        cd /home/misha/projects/python/MySuperAPI/
-        git pull origin main
-        docker-compose down
+        git clone https://github.com/Mishazx/MySuperAPI
+        cd MySuperAPI
         docker-compose up -d
