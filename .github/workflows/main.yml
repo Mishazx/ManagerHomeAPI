@@ -47,3 +47,10 @@ jobs:
     - name: Time
       run: |
         docker-compose logs
+
+    - name: Debug
+      run: |
+        echo "Contents of the current directory:"
+        ls -la
+        echo "Docker container status:"
+        docker ps -a
