@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  # Django приложение
+  web:
+    build: .
+    container_name: MySuperAPI_app
+    volumes:
+      - .:/app
+    ports:
+      - "20000:20000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    networks:
+      - MySuperAPI
+
+  # База данных PostgreSQL
+  db:
+    image: postgres:13
+    container_name: MySuperAPI_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydatabase
+    env_file:
+      - .env
+    networks:
+      - MySuperAPI
+
+  # Сервер Nginx
+  nginx:
+    image: nginx:latest
+    container_name: MySuperAPI_nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "20001:80"
+    depends_on:
+      - web
+    networks:
+    - MySuperAPI
+
+volumes:
+  postgres_data:
+
+networks:
+  MySuperAPI:
+    driver: bridge

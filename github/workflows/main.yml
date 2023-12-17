@@ -1,0 +1,25 @@
+name: Django CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Build and push Docker image
+      run: |
+        docker-compose build
+        docker-compose up -d
+
