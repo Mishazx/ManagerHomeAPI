@@ -41,3 +41,16 @@ jobs:
         docker-compose build
         docker-compose up -d
 
+  deploy_locally:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Deploy to local machine
+      run: |
+        cd /home/misha/projects/python/MySuperAPI/
+        git pull origin main
+        docker-compose down
+        docker-compose up -d
