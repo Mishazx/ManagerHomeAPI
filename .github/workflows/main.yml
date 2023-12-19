@@ -36,21 +36,9 @@ jobs:
         echo "DEBUG=${{ secrets.DEBUG }}" >> .env
 
 
-    - name: Build
+    - name: Build and push Docker Hub
       run: |
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
         docker-compose build
-    
-    - name: Run
-      run: |
-        docker-compose up -d
+        docker-compose push
 
-    - name: Time
-      run: |
-        docker-compose logs
-
-    - name: Debug
-      run: |
-        echo "Contents of the current directory:"
-        ls -la
-        echo "Docker container status:"
-        docker ps -a
