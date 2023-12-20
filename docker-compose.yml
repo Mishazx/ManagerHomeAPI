@@ -4,7 +4,7 @@ services:
   # Django приложение
   web:
     build: .
-    container_name: MySuperAPI_app
+    container_name: my_super_api
     volumes:
       - .:/app
     ports:
@@ -14,12 +14,12 @@ services:
     env_file:
       - .env
     networks:
-      - MySuperAPI
+      - my_super_api
 
   # База данных PostgreSQL
   db:
     image: postgres:13
-    container_name: MySuperAPI_db
+    container_name: my_super_api_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -29,12 +29,12 @@ services:
     env_file:
       - .env
     networks:
-      - MySuperAPI
+      - my_super_api
 
   # Сервер Nginx
   nginx:
     image: nginx:latest
-    container_name: MySuperAPI_nginx
+    container_name: my_super_api_nginx
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
@@ -42,11 +42,11 @@ services:
     depends_on:
       - web
     networks:
-    - MySuperAPI
+    - my_super_api
 
 volumes:
   postgres_data:
 
 networks:
-  MySuperAPI:
+  my_super_api:
     driver: bridge
