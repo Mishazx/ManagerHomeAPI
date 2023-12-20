@@ -1,6 +1,6 @@
 # Dockerfile
 ARG BASE_IMAGE
-FROM ${BASE_IMAGE}/python:3.8
+FROM ${BASE_IMAGE}/python:3.9
 
 WORKDIR /app
 
