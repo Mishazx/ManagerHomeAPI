@@ -13,11 +13,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Docker
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-
     - name: Check architecture
       run: echo ${{ runner.architecture }}
 
