@@ -18,6 +18,9 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Check architecture
+      run: echo ${{ runner.architecture }}
+
     - name: Create .env file from template
       run: |
         cp .env.template .env
