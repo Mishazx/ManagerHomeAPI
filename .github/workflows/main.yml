@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: self-hosted
 
+    env:
+      BASE_IMAGE: arm64v8
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
