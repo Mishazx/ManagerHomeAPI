@@ -41,5 +41,4 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/my_super_api:arm64v8
 
       - name: Run Server
-        run: |
-          docker-compose up -d
+        run: docker-compose up -d
