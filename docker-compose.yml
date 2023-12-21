@@ -3,7 +3,10 @@ version: '3'
 services:
   # Django приложение
   web:
-    build: .
+    build:
+      context: .
+      args:
+        BASE_IMAGE: ${BASE_IMAGE}
     container_name: my_super_api
     volumes:
       - .:/app
