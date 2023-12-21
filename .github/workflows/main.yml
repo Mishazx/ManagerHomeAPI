@@ -33,14 +33,12 @@ jobs:
         echo "DJANGO_SUPERUSER_EMAIL=${{ secrets.DJANGO_SUPERUSER_EMAIL }}" >> .env
         echo "DEBUG=${{ secrets.DEBUG }}" >> .env
 
-
     - name: Build and push Docker Hub
       run: |
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
         docker build --build-arg BASE_IMAGE=arm64v8 -t my_super_api:arm64v8 .
         docker tag my_super_api:arm64v8 ${{ secrets.DOCKER_USERNAME }}/my_super_api:arm64v8
-        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
         docker push ${{ secrets.DOCKER_USERNAME }}/my_super_api:arm64v8
-
 
       - name: Run Server
         run: |
