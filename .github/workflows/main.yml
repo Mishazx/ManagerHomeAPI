@@ -40,5 +40,5 @@ jobs:
         docker tag my_super_api:arm64v8 ${{ secrets.DOCKER_USERNAME }}/my_super_api:arm64v8
         docker push ${{ secrets.DOCKER_USERNAME }}/my_super_api:arm64v8
 
-      - name: Run Server
-        run: docker-compose up -d
+    - name: Run Server
+      run: docker-compose up -d
