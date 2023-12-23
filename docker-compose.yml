@@ -25,10 +25,6 @@ services:
     container_name: my_super_api_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=mypassword
-      - POSTGRES_DB=mydatabase
     env_file:
       - .env
     networks:
