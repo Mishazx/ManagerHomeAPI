@@ -16,7 +16,4 @@ COPY . /app/
 
 EXPOSE 20000
 
-RUN python manage.py migrate
-RUN python manage.py create_superuser
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:20000"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py create_superuser && python manage.py runserver 0.0.0.0:20000"]
