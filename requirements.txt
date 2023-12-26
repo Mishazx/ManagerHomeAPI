@@ -3,3 +3,4 @@ djangorestframework
 Python-dotenv
 requests
 psycopg2-binary
+telebot

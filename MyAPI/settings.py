@@ -33,6 +33,8 @@ YANDEX_OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID_YA")
 YANDEX_OAUTH2_SECRET_KEY = os.getenv("SECRET_KEY_YA")
 YANDEX_OAUTH2_REDIRECT_URI = os.getenv("REDIRECT_URI")
 
+# Token Telegram Bot
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'YandexAPI',
+    'TelegramAPI',
     'API'
 ]
 
