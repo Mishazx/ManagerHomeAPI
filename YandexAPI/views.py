@@ -64,6 +64,7 @@ def exchange_code_for_token(request):
     }
     response = requests.post(token_url, data=token_params)
     token_data = response.json()
+    print(token_data)
     
     token = request.GET.get('token')
     tkn = Token.objects.get(key=token)

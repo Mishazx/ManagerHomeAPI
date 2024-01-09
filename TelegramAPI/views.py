@@ -1,12 +1,16 @@
-from django.views import View
+from django.db import IntegrityError
 from django.http import JsonResponse
-
+from django.views import View
 from django.conf import settings
 
 from django.contrib.auth.models import User
-from django.db import IntegrityError
+
+from rest_framework.authtoken.models import Token
 
 from telebot import TeleBot, types
+
+from YandexAPI.models import Device, OAuthKey
+from YandexAPI.utils import register_allDevice
 
 from .keyboard import create_MainKeyboard, create_SettingsKeyboard
 
@@ -14,11 +18,12 @@ from .utils import create_token_for_user
 
 
 token = settings.TELEGRAM_BOT_TOKEN
-tg_webhook = settings.TELEGRAM_BOT_WEBHOOK
+url_domain = settings.DOMAIN_URL
+
 
 bot = TeleBot(token)
 
-bot.set_webhook(url=tg_webhook)
+bot.set_webhook(url=f'{url_domain}/tg/webhook/')
 
 
 class UpdateBot(View):
@@ -77,6 +82,63 @@ def handle_begin_callback(call):
         bot.send_message(call.message.chat.id, f"Ошибка: {e}")
 
 
+@bot.message_handler(func=lambda message: "Привязать аккаунт 'Яндекс'" in message.text)
+def mainMenu(message):
+    try:
+        username = message.chat.username
+        user = User.objects.get(username=username)
+        token = Token.objects.get(user=user)
+        token_key = token.key
+        
+        markup = types.InlineKeyboardMarkup()
+        button = types.InlineKeyboardButton("Кликните сюда", 
+                                              url=f"{url_domain}/yaapi/callback/?token={token_key}")
+        markup.add(button)
+        bot.send_message(message.chat.id, "Для перехода на сайт для привязки аккаунта", reply_markup=markup)
+        
+        markup = types.InlineKeyboardMarkup()
+        button2 = types.InlineKeyboardButton("Проверить привязку аккаунта 'Яндекс'", 
+                                               callback_data='link_yandex')
+        markup.add(button2)
+        bot.send_message(message.chat.id, 'После привязки нажмите сюда, для завершения', reply_markup=markup)
+
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Ошибка: {e}")
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'link_yandex')
+def link_yandex(call):
+    try:
+        username = call.from_user.username
+        user = User.objects.get(username=username)
+        oauth_key = OAuthKey.objects.filter(user=user).exists()
+                
+        if oauth_key:
+            keyboard = create_SettingsKeyboard(username)
+            bot.send_message(call.message.chat.id, "Аккаунт 'Яндекс' успешно привязан", reply_markup=keyboard)
+            register_allDevice(username)
+                
+        else:
+            bot.send_message(call.message.chat.id, "Не удалось привязать аккаунт, попробуйте еще раз или попробуйте познее")
+            
+    except Exception as e:
+        bot.send_message(call.message.chat.id, f"Ошибка: {e}")
+
+
+@bot.message_handler(func=lambda message: "Перерегистрировать все устройства" in message.text)
+def settingsMenu(message):
+    try:
+        username = message.chat.username
+        user = User.objects.get(username=username)     
+        Device.objects.filter(user=user).delete()
+        bot.send_message(message.chat.id, f"Устройства удалены")
+        register_allDevice(username)
+        bot.send_message(message.chat.id, f'Устройства успешно добавлены')
+
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Ошибка: {e}")    
+
+
 @bot.message_handler(func=lambda message: 'Главное меню' in message.text)
 def mainMenu(message):
     try:
@@ -85,6 +147,7 @@ def mainMenu(message):
 
     except Exception as e:
         bot.send_message(message.chat.id, f"Ошибка: {e}")
+
 
 @bot.message_handler(func=lambda message: 'Настройки' in message.text)
 def settingsMenu(message):

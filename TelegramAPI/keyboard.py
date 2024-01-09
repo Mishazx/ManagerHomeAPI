@@ -15,11 +15,10 @@ def create_MainKeyboard():
     return keyboard
 
 def create_SettingsKeyboard(username):
-
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
+    
     user = User.objects.get(username=username)
     oauth_key = OAuthKey.objects.filter(user=user).exists()
-    
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
 
     if oauth_key:
         buttonUnlink = types.KeyboardButton("Отвязать аккаунт 'Яндекс'")
@@ -32,7 +31,6 @@ def create_SettingsKeyboard(username):
         keyboard.add(buttonLink)
 
     buttonMain = types.KeyboardButton("Главное меню")
-    buttonTest = types.KeyboardButton("Новые функции")
-    keyboard.add(buttonMain, buttonTest)
+    keyboard.add(buttonMain)
 
     return keyboard

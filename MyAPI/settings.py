@@ -28,10 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("DJANGO_KEY")
 
+DOMAIN_URL = os.getenv("DOMAIN_URL")
+
 # Yandex OAUTH Keys
 YANDEX_OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID_YA")
 YANDEX_OAUTH2_SECRET_KEY = os.getenv("SECRET_KEY_YA")
-YANDEX_OAUTH2_REDIRECT_URI = os.getenv("REDIRECT_URI")
+YANDEX_OAUTH2_REDIRECT_URI = f'{DOMAIN_URL}/yaapi/callback/'
 
 # Token Telegram Bot
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
