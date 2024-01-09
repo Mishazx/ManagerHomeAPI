@@ -31,6 +31,8 @@ jobs:
         echo "CLIENT_ID_YA=${{ secrets.CLIENT_ID_YA }}" >> .env
         echo "SECRET_KEY_YA=${{ secrets.SECRET_KEY_YA }}" >> .env
         echo "REDIRECT_URI=${{ secrets.REDIRECT_URI }}" >> .env
+        echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
+        echo "TELEGRAM_BOT_WEBHOOK=${{ secrets.TELEGRAM_BOT_WEBHOOK }}" >> .env
         echo "DJANGO_SUPERUSER_USERNAME=${{ secrets.DJANGO_SUPERUSER_USERNAME }}" >> .env
         echo "DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }}" >> .env
         echo "DJANGO_SUPERUSER_EMAIL=${{ secrets.DJANGO_SUPERUSER_EMAIL }}" >> .env
@@ -44,4 +46,4 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/my_super_api:arm64v8
 
     - name: Run Server
-      run: docker-compose up -d
+      run: docker-compose up -d --build

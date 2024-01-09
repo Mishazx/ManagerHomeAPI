@@ -35,6 +35,7 @@ YANDEX_OAUTH2_REDIRECT_URI = os.getenv("REDIRECT_URI")
 
 # Token Telegram Bot
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_BOT_WEBHOOK = os.getenv("TELEGRAM_BOT_WEBHOOK")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

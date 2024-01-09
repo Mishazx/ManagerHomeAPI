@@ -14,8 +14,11 @@ from .utils import create_token_for_user
 
 
 token = settings.TELEGRAM_BOT_TOKEN
+tg_webhook = settings.TELEGRAM_BOT_WEBHOOK
 
 bot = TeleBot(token)
+
+bot.set_webhook(url=tg_webhook)
 
 
 class UpdateBot(View):
@@ -73,4 +76,3 @@ def handle_begin_callback(call):
     except Exception as e:
         bot.send_message(call.message.chat.id, f"Ошибка: {e}")
 
-bot.set_webhook(url=f"https://iot.mishazx.ru/tg/webhook/")
