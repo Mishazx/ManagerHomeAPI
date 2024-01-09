@@ -23,7 +23,7 @@ url_domain = settings.DOMAIN_URL
 
 bot = TeleBot(token)
 url_tg_webhook = f'{url_domain}/tg/webhook/'
-
+print(url_tg_webhook)
 bot.set_webhook(url=url_tg_webhook)
 
 
