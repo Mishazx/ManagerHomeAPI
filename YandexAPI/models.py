@@ -25,7 +25,8 @@ class Device(models.Model):
     device_id = models.CharField(max_length=50)
     device_name = models.CharField(max_length=50)
     device_type = models.CharField(max_length=50)
-    
+    online = models.BooleanField(default=False)
+
     objects = DeviceManager()
 
     def save(self, *args, **kwargs):

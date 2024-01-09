@@ -14,6 +14,34 @@ def create_MainKeyboard():
     
     return keyboard
 
+
+def create_DevicesKeyboard(username):
+    user = User.objects.get(username=username)
+    user_devices = Device.objects.filter(user=user)
+    
+    device_names = user_devices.values_list('device_name', flat=True)
+    device_status = user_devices.values_list('online', flat=True)
+    
+    device_button_list = []
+    
+    for item, item_status in zip(list(device_names), list(device_status)):
+        if item_status == True:
+            item_status = '✅'
+        else:
+            item_status = '❌'
+        device_button_list.append(types.InlineKeyboardButton(f"{item} {item_status}", callback_data=f"device_callback_{item_status}_{item}"))
+
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    markup.add(*device_button_list)    
+    
+    button_what_on = types.InlineKeyboardButton(f"Что у меня включено?", callback_data='what_is_on')
+    button_update_device = types.InlineKeyboardButton(f"Обновить", callback_data='update_devices')
+
+    markup.add(button_what_on, button_update_device)
+
+    return markup
+
+
 def create_SettingsKeyboard(username):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
     

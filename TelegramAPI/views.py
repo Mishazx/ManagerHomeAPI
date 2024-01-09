@@ -12,7 +12,7 @@ from telebot import TeleBot, types
 from YandexAPI.models import Device, OAuthKey
 from YandexAPI.utils import register_allDevice
 
-from .keyboard import create_MainKeyboard, create_SettingsKeyboard
+from .keyboard import create_MainKeyboard, create_SettingsKeyboard, create_DevicesKeyboard
 
 from .utils import create_token_for_user
 
@@ -81,6 +81,26 @@ def handle_begin_callback(call):
        
     except Exception as e:
         bot.send_message(call.message.chat.id, f"Ошибка: {e}")
+        import traceback
+        bot.send_message(call.message.chat.id, f'{traceback.format_exc()}')
+
+
+@bot.message_handler(func=lambda message: "Все устройства 'Яндекс'" in message.text)
+def settingsMenu(message):
+    try:        
+        keyboard = create_DevicesKeyboard(message.chat.username)
+        bot.send_message(message.chat.id, f"Вы находитесь в меню\nВсе устройства 'Яндекс'", reply_markup=keyboard)
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Ошибка: {e}")    
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'back')
+def handle_back_callback(call):
+    try:
+        keyboard = create_DevicesKeyboard(call.from_user.username)
+        bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.message_id, text=f"Вы находитесь в меню\nВсе устройства 'Яндекс'", reply_markup=keyboard)            # Отправляем сообщение о статусе устройства
+    except Exception as e:
+        bot.send_message(call.from_user.id, f"Ошибка: {e}")
 
 
 @bot.message_handler(func=lambda message: "Привязать аккаунт 'Яндекс'" in message.text)
@@ -133,9 +153,12 @@ def settingsMenu(message):
         user = User.objects.get(username=username)     
         Device.objects.filter(user=user).delete()
         bot.send_message(message.chat.id, f"Устройства удалены")
-        register_allDevice(username)
-        bot.send_message(message.chat.id, f'Устройства успешно добавлены')
-
+        output = register_allDevice(username)
+        if output == 'Success':
+            bot.send_message(message.chat.id, f'Устройства успешно добавлены')
+        else:
+            bot.send_message(message.chat.id, output)
+            
     except Exception as e:
         bot.send_message(message.chat.id, f"Ошибка: {e}")    
 
