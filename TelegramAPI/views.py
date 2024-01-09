@@ -72,3 +72,5 @@ def handle_begin_callback(call):
        
     except Exception as e:
         bot.send_message(call.message.chat.id, f"Ошибка: {e}")
+
+bot.set_webhook(url=f"https://iot.mishazx.ru/tg/webhook/")
