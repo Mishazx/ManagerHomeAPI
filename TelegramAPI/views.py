@@ -10,9 +10,9 @@ from rest_framework.authtoken.models import Token
 from telebot import TeleBot, types
 
 from YandexAPI.models import Device, OAuthKey
-from YandexAPI.utils import register_allDevice
+from YandexAPI.utils import control_device, get_reconnect_device, register_allDevice
 
-from .keyboard import create_MainKeyboard, create_SettingsKeyboard, create_DevicesKeyboard
+from .keyboard import create_DeviceKeyboard, create_MainKeyboard, create_SettingsKeyboard, create_DevicesKeyboard
 
 from .utils import create_token_for_user
 
@@ -23,7 +23,6 @@ url_domain = settings.DOMAIN_URL
 
 bot = TeleBot(token)
 url_tg_webhook = f'{url_domain}/tg/webhook/'
-print(url_tg_webhook)
 bot.set_webhook(url=url_tg_webhook)
 
 
@@ -38,7 +37,8 @@ class UpdateBot(View):
         except Exception as e:
             print(f"Error processing update: {e}")
             return JsonResponse({'code': 500, 'error': str(e)})
-        
+
+
 @bot.message_handler(commands=['start'])
 def start_message(message):
     text = '<b>Бот успешно запущен!</b>\n\n'
@@ -92,6 +92,96 @@ def settingsMenu(message):
         bot.send_message(message.chat.id, f"Вы находитесь в меню\nВсе устройства 'Яндекс'", reply_markup=keyboard)
     except Exception as e:
         bot.send_message(message.chat.id, f"Ошибка: {e}")    
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('device_callback_'))
+def handle_device_run_callback(call):
+    device_name_from_callback = call.data.split('_')[-1]
+    status = call.data.split('_')[-2]
+    username = call.from_user.username
+
+    try:
+        user = User.objects.get(username=username)
+        user_device = Device.objects.get(user=user, device_name=device_name_from_callback)
+        device_id = user_device.device_id
+        
+        if status == '❌':
+            # СЮДА УВЕДОМЛЕНИЕ СДЕЛАТЬ
+            bot.answer_callback_query(callback_query_id=call.id, text="Устройство офлайн.\nПроверьте устройство или нажмите кнопку обновить.", show_alert=True)
+            
+        else:
+            data, state = get_reconnect_device(username, device_id, device_name_from_callback)
+
+
+            keyboard = create_DeviceKeyboard(device_name_from_callback, state)
+
+
+            bot.edit_message_text(
+                chat_id=call.from_user.id, 
+                message_id=call.message.message_id, 
+                text=data, 
+                reply_markup=keyboard
+                )            # Отправляем сообщение о статусе устройства
+
+    except User.DoesNotExist:
+        bot.send_message(call.from_user.id, "Пользователь не найден в базе данных.")
+    except Device.DoesNotExist:
+        bot.send_message(call.from_user.id, "Устройства пользователя не найдены в базе данных.")
+    except Exception as e:
+        import traceback
+        bot.send_message(call.from_user.id, f'{traceback.format_exc()}')
+        bot.send_message(call.from_user.id, f"Ошибка: {e}")
+
+
+
+
+# Обработка команд для управления устройством
+@bot.callback_query_handler(func=lambda call: call.data.startswith(('on_', 'off_')))
+def handle_device_control_callback(call):
+    
+    try:
+        username = call.from_user.username
+        command, device_name = call.data.split('_')[:2]
+        user = User.objects.get(username=username)
+        device_instance = Device.objects.get(user=user, device_name=device_name)
+                
+        # Запрос на сервер яндекс о статусе и времени
+        # bot.send_message(call.from_user.id, f'DATA! device: {on_off_state} !! {dt_object}')
+
+        device_id_value = device_instance.device_id
+        if command == 'on':
+            msg = control_device(username, device_id_value, True) # ВКЛЮЧИТЬ ДЛЯ РЕАЛЬНО ИСПОЛЬЗОВАНИЯ
+            bot.answer_callback_query(callback_query_id=call.id, 
+                                      text=f"Включили устройство '{device_name}'")
+            # bot.send_message(call.from_user.id, str(msg))
+
+        # elif command == 'off':
+        else:
+            msg = control_device(username, device_id_value, False) # ВКЛЮЧИТЬ ДЛЯ РЕАЛЬНО ИСПОЛЬЗОВАНИЯ
+            bot.answer_callback_query(callback_query_id=call.id, 
+                                      text=f"Выключили устройство '{device_name}'")
+            # bot.send_message(call.from_user.id, str(msg))
+
+
+        data, state = get_reconnect_device(username, device_id_value, device_name)
+
+        keyboard = create_DeviceKeyboard(device_name, state)
+
+        bot.edit_message_text(
+                chat_id=call.from_user.id, 
+                message_id=call.message.message_id, 
+                text=data, 
+                reply_markup=keyboard
+                )            # Отправляем сообщение о статусе устройства
+        # поменять информацию
+
+               
+    except Device.DoesNotExist:
+        bot.send_message(call.from_user.id, f"Устройство с именем {device_name} не найдено.")
+
+    except Exception as e:
+        bot.send_message(call.from_user.id, f"Ошибка: {e}")
+
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'back')

@@ -42,6 +42,18 @@ def create_DevicesKeyboard(username):
     return markup
 
 
+def create_DeviceKeyboard(device_name_from_callback, state):
+    keyboard = types.InlineKeyboardMarkup()
+    if state:
+        keyboard.add(types.InlineKeyboardButton(text="Выключить", callback_data=f"off_{device_name_from_callback}"))
+    else:
+        keyboard.add(types.InlineKeyboardButton(text="Включить", callback_data=f"on_{device_name_from_callback}"))
+    keyboard.add(types.InlineKeyboardButton(text="Вернуться назад", callback_data="back"))
+    
+    return keyboard
+
+
+
 def create_SettingsKeyboard(username):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
     
