@@ -93,7 +93,7 @@ def mainMenu(message):
         
         markup = types.InlineKeyboardMarkup()
         button = types.InlineKeyboardButton("Кликните сюда", 
-                                              url=f"{url_domain}/yaapi/code/?token={token_key}")
+                                              url=f"{url_domain}/yaapi/oauth/?token={token_key}")
         markup.add(button)
         bot.send_message(message.chat.id, "Для перехода на сайт для привязки аккаунта", reply_markup=markup)
         
