@@ -8,7 +8,7 @@ from django.db import IntegrityError
 
 from telebot import TeleBot, types
 
-from .keyboard import create_MainKeyboard
+from .keyboard import create_MainKeyboard, create_SettingsKeyboard
 
 from .utils import create_token_for_user
 
@@ -76,3 +76,21 @@ def handle_begin_callback(call):
     except Exception as e:
         bot.send_message(call.message.chat.id, f"Ошибка: {e}")
 
+
+@bot.message_handler(func=lambda message: 'Главное меню' in message.text)
+def mainMenu(message):
+    try:
+        keyboard = create_MainKeyboard()
+        bot.send_message(message.chat.id, f'Вы находитесь в главном меню', reply_markup=keyboard)
+
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Ошибка: {e}")
+
+@bot.message_handler(func=lambda message: 'Настройки' in message.text)
+def settingsMenu(message):
+    try:
+        keyboard = create_SettingsKeyboard(message.chat.username)
+        bot.send_message(message.chat.id, f'Вы находитесь в меню настроек',reply_markup=keyboard)
+
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Ошибка: {e}")

@@ -28,8 +28,8 @@ def create_SettingsKeyboard(username):
         keyboard.add(buttonUnlink, buttonRegisterDevices)
         
     else:
-        buttonPri = types.KeyboardButton("Привязать аккаунт 'Яндекс'")
-        keyboard.add(buttonPri)
+        buttonLink = types.KeyboardButton("Привязать аккаунт 'Яндекс'")
+        keyboard.add(buttonLink)
 
     buttonMain = types.KeyboardButton("Главное меню")
     buttonTest = types.KeyboardButton("Новые функции")

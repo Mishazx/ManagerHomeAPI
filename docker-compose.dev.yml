@@ -7,7 +7,7 @@ services:
       context: .
       args:
         BASE_IMAGE: ${BASE_IMAGE}
-    container_name: my_super_api_dev
+    container_name: my_iot_api_dev
     ports:
       - "21000:20000" 
     depends_on:
@@ -15,33 +15,20 @@ services:
     env_file:
       - .dev.env 
     networks:
-      - my_super_api_dev
+      - my_iot_api_dev
 
   # База данных PostgreSQL для dev
   db_dev:
     image: postgres:13
-    container_name: my_super_api_db_dev
+    container_name: my_iot_api_db_dev
     env_file:
       - .dev.env
     networks:
-      - my_super_api_dev
-
-  # Сервер Nginx для dev
-  nginx_dev:
-    image: nginx:latest
-    container_name: my_super_api_nginx_dev
-    volumes:
-      - ./nginx.dev.conf:/etc/nginx/nginx.conf 
-    ports:
-      - "21001:80"
-    depends_on:
-      - web 
-    networks:
-    - my_super_api_dev
+      - my_iot_api_dev
 
 volumes:
   postgres_data_dev:
 
 networks:
-  my_super_api_dev:
+  my_iot_api_dev:
     driver: bridge

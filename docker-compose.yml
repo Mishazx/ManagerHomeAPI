@@ -7,7 +7,7 @@ services:
       context: .
       args:
         BASE_IMAGE: ${BASE_IMAGE}
-    container_name: my_super_api
+    container_name: my_iot_api
     ports:
       - "20000:20000"
     depends_on:
@@ -15,23 +15,23 @@ services:
     env_file:
       - .env
     networks:
-      - my_super_api
+      - my_iot_api
 
   # База данных PostgreSQL
   db:
     image: postgres:13
-    container_name: my_super_api_db
+    container_name: my_iot_api_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
     networks:
-      - my_super_api
+      - my_iot_api
 
   # Сервер Nginx
   nginx:
     image: nginx:latest
-    container_name: my_super_api_nginx
+    container_name: my_iot_api_nginx
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
@@ -39,11 +39,11 @@ services:
     depends_on:
       - web
     networks:
-    - my_super_api
+    - my_iot_api
 
 volumes:
   postgres_data:
 
 networks:
-  my_super_api:
+  my_iot_api:
     driver: bridge
