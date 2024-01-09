@@ -8,8 +8,6 @@ services:
       args:
         BASE_IMAGE: ${BASE_IMAGE}
     container_name: my_super_api
-    volumes:
-      - .:/app
     ports:
       - "20000:20000"
     depends_on:
