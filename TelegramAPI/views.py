@@ -22,8 +22,9 @@ url_domain = settings.DOMAIN_URL
 
 
 bot = TeleBot(token)
+url_tg_webhook = f'{url_domain}/tg/webhook/'
 
-bot.set_webhook(url=f'{url_domain}/tg/webhook/')
+bot.set_webhook(url=url_tg_webhook)
 
 
 class UpdateBot(View):
