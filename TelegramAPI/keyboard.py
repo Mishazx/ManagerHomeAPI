@@ -53,7 +53,6 @@ def create_DeviceKeyboard(device_name_from_callback, state):
     return keyboard
 
 
-
 def create_SettingsKeyboard(username):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
     

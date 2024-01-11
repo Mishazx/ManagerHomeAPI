@@ -8,6 +8,8 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
+from TelegramAPI.keyboard import create_DeviceKeyboard
+
 from .models import Device, OAuthKey
 
 
@@ -51,23 +53,74 @@ def control_device(username, id, flag, max_retries=5):
     return None
 
 
-def get_reconnect_device(username, device_id, device_name):
+def get_capabilities_on_off(username, device_id):
     data_device = get_device(username, device_id)
-    on_off_capability = next(cap for cap in data_device['capabilities'] if cap['type'] == 'devices.capabilities.on_off')
-    on_off_bool = on_off_capability['state']['value']
-    on_off_last_updated = on_off_capability['last_updated']
-    dt_object = datetime.fromtimestamp(on_off_last_updated) + timedelta(hours=3)
-    dt_object = dt_object.replace(microsecond=0).strftime("%H:%M:%S %d-%m-%Y")
-    
-    if on_off_bool:
-        on_off_state = 'Включено'
+    on_off_capability = next(
+        (cap for cap in data_device['capabilities'] if cap.get('type') == 'devices.capabilities.on_off'),
+        None
+    )    
+    if on_off_capability:
+        return True
     else:
-        on_off_state = 'Выключено'
+        return False
 
-    
-    text = f"Статус устройства '{device_name}' \nНа {dt_object} \n{on_off_state}"
-    
-    return text, on_off_bool
+
+def get_reconnect_device(username, device_id):
+    data_device = get_device(username, device_id)
+    name_device = data_device['name']
+    # on_off_capability = next(cap for cap in data_device['capabilities'] if cap['type'] == 'devices.capabilities.on_off')
+    on_off_capability = next(
+        (cap for cap in data_device['capabilities'] if cap.get('type') == 'devices.capabilities.on_off'),
+        None
+    )    
+    if on_off_capability:
+        on_off_bool = on_off_capability['state']['value']
+        on_off_last_updated = on_off_capability['last_updated']
+        dt_object = datetime.fromtimestamp(on_off_last_updated) + timedelta(hours=3)
+        dt_object = dt_object.replace(microsecond=0).strftime("%H:%M:%S %d-%m-%Y")
+
+        if on_off_bool:
+            on_off_state = 'Включено'
+        else:
+            on_off_state = 'Выключено'
+
+        data = f"Статус устройства '{name_device}' \nНа {dt_object} \n{on_off_state}"
+        
+        keyboard= create_DeviceKeyboard(name_device, on_off_bool)
+        
+        return data, keyboard
+        
+    else:
+        sensor_data = {}
+        for prop in data_device["properties"]:
+            instance = prop["parameters"]["instance"]
+            value = prop["state"]["value"]
+            last_updated = prop["last_updated"]
+            # sensor_data[instance] = value
+            sensor_data[instance] = {"value": value, "last_updated": last_updated}
+        
+        keyboard = None
+        
+        temperature = sensor_data.get('temperature')
+        humidity = sensor_data.get('humidity')
+        pressure = sensor_data.get('pressure')
+        open = sensor_data.get('open')
+        data = f"Статус устройства '{name_device}'\n"
+        if temperature:
+            data += f'Температура: {temperature.get("value")}\n'
+        if humidity:
+            data += f'Влажность: {humidity.get("value")}%\n'
+        if pressure:
+            data += f'Давление: {pressure.get("value")} мм рт. ст.\n'
+        if open:
+            if open == 'closed':
+                status = 'Закрыто'
+                data += f'Статус: {status}\n'
+            else:
+                status = 'Открыто'
+                data += f'Статус: {status}\n'
+        
+        return str(data), keyboard
 
 
 def get_device(username, device_id, max_retries=5):

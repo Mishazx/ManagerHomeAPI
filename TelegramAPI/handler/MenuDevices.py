@@ -2,7 +2,7 @@ from TelegramAPI.views import bot
 from django.contrib.auth.models import User
 from TelegramAPI.keyboard import create_DeviceKeyboard, create_DevicesKeyboard
 from YandexAPI.models import Device
-from YandexAPI.utils import control_device, get_reconnect_device
+from YandexAPI.utils import control_device, get_capabilities_on_off, get_reconnect_device
 
 
 # Function menu device list
@@ -28,22 +28,31 @@ def handle_device_run_callback(call):
         device_id = user_device.device_id
         
         if status == '❌':
-            # СЮДА УВЕДОМЛЕНИЕ СДЕЛАТЬ
-            bot.answer_callback_query(callback_query_id=call.id, text="Устройство офлайн.\nПроверьте устройство или нажмите кнопку обновить.", show_alert=True)
+            bot.answer_callback_query (
+                callback_query_id=call.id, 
+                text="Устройство офлайн.\nПроверьте устройство или нажмите кнопку обновить.", 
+                show_alert=True
+            )
             
         else:
-            data, state = get_reconnect_device(username, device_id, device_name_from_callback)
 
+            data, keyboard = get_reconnect_device(username, device_id)
 
-            keyboard = create_DeviceKeyboard(device_name_from_callback, state)
-
-
-            bot.edit_message_text(
-                chat_id=call.from_user.id, 
-                message_id=call.message.message_id, 
-                text=data, 
-                reply_markup=keyboard
-                )            # Отправляем сообщение о статусе устройства
+            if keyboard == None:            
+                bot.edit_message_text (
+                    chat_id=call.from_user.id,
+                    message_id=call.message.message_id,
+                    text=data
+                )
+            else:
+                bot.edit_message_text (
+                    chat_id=call.from_user.id, 
+                    message_id=call.message.message_id, 
+                    text=data, 
+                    reply_markup=keyboard
+                ) 
+                
+            
 
     except User.DoesNotExist:
         bot.send_message(call.from_user.id, "Пользователь не найден в базе данных.")
@@ -84,12 +93,12 @@ def handle_device_control_callback(call):
         data, state = get_reconnect_device(username, device_id_value, device_name)
         keyboard = create_DeviceKeyboard(device_name, state)
 
-        bot.edit_message_text(
-                chat_id=call.from_user.id, 
-                message_id=call.message.message_id, 
-                text=data, 
-                reply_markup=keyboard
-                )            # Отправляем сообщение о статусе устройства
+        bot.edit_message_text (
+            chat_id=call.from_user.id, 
+            message_id=call.message.message_id, 
+            text=data, 
+            reply_markup=keyboard
+        )            # Отправляем сообщение о статусе устройства
         # поменять информацию
 
     except Device.DoesNotExist:
@@ -103,6 +112,12 @@ def handle_device_control_callback(call):
 def handle_back_callback(call):
     try:
         keyboard = create_DevicesKeyboard(call.from_user.username)
-        bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.message_id, text=f"Вы находитесь в меню\nВсе устройства 'Яндекс'", reply_markup=keyboard)
+        bot.edit_message_text (
+            chat_id=call.from_user.id, 
+            message_id=call.message.message_id, 
+            text=f"Вы находитесь в меню\nВсе устройства 'Яндекс'", 
+            reply_markup=keyboard
+        )
+        
     except Exception as e:
         bot.send_message(call.from_user.id, f"Ошибка: {e}")

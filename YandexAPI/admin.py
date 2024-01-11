@@ -8,7 +8,7 @@ class OAuthKeyAdmin(admin.ModelAdmin):
 
 
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ('user', 'device_id', 'device_name', 'device_type', 'online', 'id')
+    list_display = ('user', 'device_id', 'device_name', 'device_type', 'online')
     search_fields = ('device_name', 'device_id')
     
     

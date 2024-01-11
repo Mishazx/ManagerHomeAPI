@@ -8,6 +8,8 @@ services:
       args:
         BASE_IMAGE: ${BASE_IMAGE}
     container_name: my_iot_api_dev
+    volumes:
+      - .:/app
     ports:
       - "21000:20000" 
     depends_on:
