@@ -12,7 +12,7 @@ from telebot import TeleBot, types
 from YandexAPI.models import Device, OAuthKey
 from YandexAPI.utils import control_device, get_reconnect_device, register_allDevice
 
-from .keyboard import create_DeviceKeyboard, create_MainKeyboard, create_SettingsKeyboard, create_DevicesKeyboard
+from .keyboard import create_MainKeyboard, create_SettingsKeyboard, create_DevicesKeyboard
 
 from .utils import create_token_for_user
 
@@ -76,7 +76,7 @@ def handle_begin_callback(call):
             
         keyboard = create_MainKeyboard()
         bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
-        bot.send_message(call.message.chat.id, f'Доброго {username}',reply_markup=keyboard)
+        bot.send_message(call.message.chat.id, f'Доброго времени суток {username}',reply_markup=keyboard)
        
     except Exception as e:
         bot.send_message(call.message.chat.id, f"Ошибка: {e}")

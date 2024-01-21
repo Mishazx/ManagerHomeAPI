@@ -36,26 +36,30 @@ def create_DevicesKeyboard(username):
     
     button_what_on = types.InlineKeyboardButton(f"Что у меня включено?", callback_data='what_is_on')
     button_update_device = types.InlineKeyboardButton(f"Обновить", callback_data='update_devices')
-
     markup.add(button_what_on, button_update_device)
 
     return markup
 
 
-def create_DeviceKeyboard(device_name_from_callback, state):
+
+
+def create_DeviceKeyboard(device_data):
     keyboard = types.InlineKeyboardMarkup()
-    if state:
-        keyboard.add(types.InlineKeyboardButton(text="Выключить", callback_data=f"off_{device_name_from_callback}"))
-    else:
-        keyboard.add(types.InlineKeyboardButton(text="Включить", callback_data=f"on_{device_name_from_callback}"))
+    device_name = device_data[0]
+   # keyboard.add(types.InlineKeyboardButton(text=str(state)))
+    print(device_data)
+    if len(device_data) > 2:
+        if device_data[2]:
+            keyboard.add(types.InlineKeyboardButton(text="Выключить", callback_data=f"off_{device_name}"))
+        else:
+            keyboard.add(types.InlineKeyboardButton(text="Включить", callback_data=f"on_{device_name}"))
+
     keyboard.add(types.InlineKeyboardButton(text="Вернуться назад", callback_data="back"))
-    
     return keyboard
 
 
 def create_SettingsKeyboard(username):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
-    
     user = User.objects.get(username=username)
     oauth_key = OAuthKey.objects.filter(user=user).exists()
 

@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
-from TelegramAPI.keyboard import create_DeviceKeyboard
+# from TelegramAPI.keyboard import create_DeviceKeyboard
 
 from .models import Device, OAuthKey
 
@@ -74,6 +74,7 @@ def get_reconnect_device(username, device_id):
         None
     )    
     if on_off_capability:
+        types = 'device'
         on_off_bool = on_off_capability['state']['value']
         on_off_last_updated = on_off_capability['last_updated']
         dt_object = datetime.fromtimestamp(on_off_last_updated) + timedelta(hours=3)
@@ -85,12 +86,11 @@ def get_reconnect_device(username, device_id):
             on_off_state = 'Выключено'
 
         data = f"Статус устройства '{name_device}' \nНа {dt_object} \n{on_off_state}"
-        
-        keyboard= create_DeviceKeyboard(name_device, on_off_bool)
-        
-        return data, keyboard
+        data_device = [name_device, types, on_off_bool]
+        return str(data), data_device
         
     else:
+        types = 'sensor'
         sensor_data = {}
         for prop in data_device["properties"]:
             instance = prop["parameters"]["instance"]
@@ -99,7 +99,6 @@ def get_reconnect_device(username, device_id):
             # sensor_data[instance] = value
             sensor_data[instance] = {"value": value, "last_updated": last_updated}
         
-        keyboard = None
         
         temperature = sensor_data.get('temperature')
         humidity = sensor_data.get('humidity')
@@ -120,7 +119,8 @@ def get_reconnect_device(username, device_id):
                 status = 'Открыто'
                 data += f'Статус: {status}\n'
         
-        return str(data), keyboard
+        data_device = [name_device, types]
+        return str(data), data_device
 
 
 def get_device(username, device_id, max_retries=5):

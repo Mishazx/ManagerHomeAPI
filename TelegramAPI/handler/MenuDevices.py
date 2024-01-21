@@ -36,21 +36,15 @@ def handle_device_run_callback(call):
             
         else:
 
-            data, keyboard = get_reconnect_device(username, device_id)
+            data, data_device = get_reconnect_device(username, device_id)
+            keyboard = create_DeviceKeyboard(data_device)
 
-            if keyboard == None:            
-                bot.edit_message_text (
-                    chat_id=call.from_user.id,
-                    message_id=call.message.message_id,
-                    text=data
-                )
-            else:
-                bot.edit_message_text (
-                    chat_id=call.from_user.id, 
-                    message_id=call.message.message_id, 
-                    text=data, 
-                    reply_markup=keyboard
-                ) 
+            bot.edit_message_text (
+                chat_id=call.from_user.id, 
+                message_id=call.message.message_id, 
+                text=data, 
+                reply_markup=keyboard
+            ) 
                 
             
 
@@ -82,16 +76,15 @@ def handle_device_control_callback(call):
             control_device(username, device_id_value, True) # ВКЛЮЧИТЬ ДЛЯ РЕАЛЬНО ИСПОЛЬЗОВАНИЯ
             bot.answer_callback_query(callback_query_id=call.id, 
                                       text=f"Включили устройство '{device_name}'")
-            # bot.send_message(call.from_user.id, str(msg))
 
         else:
             control_device(username, device_id_value, False) # ВКЛЮЧИТЬ ДЛЯ РЕАЛЬНО ИСПОЛЬЗОВАНИЯ
             bot.answer_callback_query(callback_query_id=call.id, 
                                       text=f"Выключили устройство '{device_name}'")
-            # bot.send_message(call.from_user.id, str(msg))
+            
 
-        data, state = get_reconnect_device(username, device_id_value, device_name)
-        keyboard = create_DeviceKeyboard(device_name, state)
+        data, data_device = get_reconnect_device(username, device_id_value)
+        keyboard = create_DeviceKeyboard(data_device)
 
         bot.edit_message_text (
             chat_id=call.from_user.id, 
@@ -104,6 +97,8 @@ def handle_device_control_callback(call):
     except Device.DoesNotExist:
         bot.send_message(call.from_user.id, f"Устройство с именем {device_name} не найдено.")
     except Exception as e:
+        import traceback
+        bot.send_message(call.from_user.id, f'{traceback.format_exc()}')
         bot.send_message(call.from_user.id, f"Ошибка: {e}")
         
 
