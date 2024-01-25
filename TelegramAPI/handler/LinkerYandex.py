@@ -1,10 +1,10 @@
-import types
+from telebot import types
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from TelegramAPI.keyboard import create_SettingsKeyboard
 from TelegramAPI.views import bot, url_domain
 from YandexAPI.models import OAuthKey
-from YandexAPI.utils import register_allDevice
+from YandexAPI.utils import register_allDevice, register_allScenario
 
 
 # Function link account Yandex
@@ -42,8 +42,10 @@ def link_yandex(call):
                 
         if oauth_key:
             keyboard = create_SettingsKeyboard(username)
-            bot.send_message(call.message.chat.id, "Аккаунт 'Яндекс' успешно привязан", reply_markup=keyboard)
             register_allDevice(username)
+            register_allScenario(username)
+            bot.send_message(call.message.chat.id, "Аккаунт 'Яндекс' успешно привязан", reply_markup=keyboard)
+
                 
         else:
             bot.send_message(call.message.chat.id, "Не удалось привязать аккаунт, попробуйте еще раз или попробуйте познее")

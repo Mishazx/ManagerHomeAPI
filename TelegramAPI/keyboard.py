@@ -1,27 +1,55 @@
+from YandexAPI.utils import get_info_scenarios
 from telebot import types
 from django.contrib.auth.models import User
 
-from YandexAPI.models import Device, OAuthKey
+from YandexAPI.models import Device, OAuthKey, Scenario
 
 
 def create_MainKeyboard():
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
 
-    button1 = types.KeyboardButton("Все устройства 'Яндекс'")
-    button2 = types.KeyboardButton("Настройки")
+    ButtonDevices = types.KeyboardButton("Все устройства 'Яндекс'")
+    Buttonscenario = types.KeyboardButton("Все сценарии")
+    ButtonSettings = types.KeyboardButton("Настройки")
 
-    keyboard.add(button1, button2)
+    keyboard.add(ButtonDevices) 
+    keyboard.add(Buttonscenario, ButtonSettings)
     
     return keyboard
 
 
-def create_DevicesKeyboard(username):
+# def create_DevicesKeyboard(username):
+#     user = User.objects.get(username=username)
+#     user_devices = Device.objects.filter(user=user)
+    
+#     device_names = user_devices.values_list('device_name', flat=True)
+#     device_status = user_devices.values_list('online', flat=True)
+    
+#     device_button_list = []
+    
+#     for item, item_status in zip(list(device_names), list(device_status)):
+#         if item_status == True:
+#             item_status = '✅'
+#         else:
+#             item_status = '❌'
+#         device_button_list.append(types.InlineKeyboardButton(f"{item} {item_status}", callback_data=f"device_callback_{item_status}_{item}"))
+
+#     markup = types.InlineKeyboardMarkup(row_width=1)
+#     markup.add(*device_button_list)
+
+#     return markup
+
+def create_DevicesKeyboard(username, page=1, items_per_page=5):
     user = User.objects.get(username=username)
     user_devices = Device.objects.filter(user=user)
     
-    device_names = user_devices.values_list('device_name', flat=True)
-    device_status = user_devices.values_list('online', flat=True)
     
+    start_index = (page - 1) * items_per_page
+    end_index = start_index + items_per_page
+    
+    device_names = user_devices.values_list('device_name', flat=True)[start_index:end_index]
+    device_status = user_devices.values_list('online', flat=True)[start_index:end_index]
+        
     device_button_list = []
     
     for item, item_status in zip(list(device_names), list(device_status)):
@@ -31,16 +59,22 @@ def create_DevicesKeyboard(username):
             item_status = '❌'
         device_button_list.append(types.InlineKeyboardButton(f"{item} {item_status}", callback_data=f"device_callback_{item_status}_{item}"))
 
-    markup = types.InlineKeyboardMarkup(row_width=2)
-    markup.add(*device_button_list)    
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(*device_button_list)
     
-    button_what_on = types.InlineKeyboardButton(f"Что у меня включено?", callback_data='what_is_on')
-    button_update_device = types.InlineKeyboardButton(f"Обновить", callback_data='update_devices')
-    markup.add(button_what_on, button_update_device)
+    total_devices = user_devices.count()
+    total_pages = (total_devices // items_per_page) + (1 if total_devices % items_per_page > 0 else 0)
 
-    return markup
+    pagination_buttons = []
+    if page > 1:
+        pagination_buttons.append(types.InlineKeyboardButton(text="<<", callback_data=f'device_page_{page - 1}'))
+    if page < total_pages:
+        pagination_buttons.append(types.InlineKeyboardButton(text=">>", callback_data=f'device_page_{page + 1}'))
 
+    if pagination_buttons:
+        keyboard.row(*pagination_buttons)
 
+    return keyboard
 
 
 def create_DeviceKeyboard(device_data):
@@ -58,6 +92,56 @@ def create_DeviceKeyboard(device_data):
     return keyboard
 
 
+# def create_ScenariosKeyboard(username):
+#     user = User.objects.get(username=username)
+#     scenarios = Scenario.objects.filter(user=user)
+    
+#     scenarios_button_list = []
+    
+#     scenario_name = scenarios.values_list('scenario_name', flat=True)
+    
+#     for item in list(scenario_name):
+#         scenarios_button_list.append(types.InlineKeyboardButton(text=item, callback_data=f'scenario_callback_{item}'))
+
+#     keyboard = types.InlineKeyboardMarkup(row_width=1)
+#     keyboard.add(*scenarios_button_list)    
+
+#     return keyboard
+
+
+def create_ScenariosKeyboard(username, page=1, items_per_page=5):
+    user = User.objects.get(username=username)
+    scenarios = Scenario.objects.filter(user=user)
+
+    start_index = (page - 1) * items_per_page
+    end_index = start_index + items_per_page
+
+    scenarios_button_list = []
+
+    scenario_name = scenarios.values_list('scenario_name', flat=True)[start_index:end_index]
+
+    for item in list(scenario_name):
+        scenarios_button_list.append(types.InlineKeyboardButton(text=item, callback_data=f'scenario_callback_{item}'))
+
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(*scenarios_button_list)
+
+    # Добавление кнопок для пагинации
+    total_scenarios = scenarios.count()
+    total_pages = (total_scenarios // items_per_page) + (1 if total_scenarios % items_per_page > 0 else 0)
+
+    pagination_buttons = []
+    if page > 1:
+        pagination_buttons.append(types.InlineKeyboardButton(text="<<", callback_data=f'scenario_page_{page - 1}'))
+    if page < total_pages:
+        pagination_buttons.append(types.InlineKeyboardButton(text=">>", callback_data=f'scenario_page_{page + 1}'))
+
+    if pagination_buttons:
+        keyboard.add(*pagination_buttons)
+
+    return keyboard
+
+
 def create_SettingsKeyboard(username):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
     user = User.objects.get(username=username)
@@ -66,12 +150,14 @@ def create_SettingsKeyboard(username):
     if oauth_key:
         buttonUnlink = types.KeyboardButton("Отвязать аккаунт 'Яндекс'")
         buttonRegisterDevices = types.KeyboardButton("Перерегистрировать все устройства")
-
-        keyboard.add(buttonUnlink, buttonRegisterDevices)
+        buttonRegisterScenarios = types.KeyboardButton("Перерегистрировать все сценарии")
+        keyboard.add(buttonUnlink)
+        keyboard.add(buttonRegisterDevices, buttonRegisterScenarios)
         
     else:
         buttonLink = types.KeyboardButton("Привязать аккаунт 'Яндекс'")
         keyboard.add(buttonLink)
+
 
     buttonMain = types.KeyboardButton("Главное меню")
     keyboard.add(buttonMain)

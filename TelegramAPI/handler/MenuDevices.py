@@ -1,3 +1,4 @@
+from telebot import types
 from TelegramAPI.views import bot
 from django.contrib.auth.models import User
 from TelegramAPI.keyboard import create_DeviceKeyboard, create_DevicesKeyboard
@@ -45,8 +46,6 @@ def handle_device_run_callback(call):
                 text=data, 
                 reply_markup=keyboard
             ) 
-                
-            
 
     except User.DoesNotExist:
         bot.send_message(call.from_user.id, "Пользователь не найден в базе данных.")
@@ -56,6 +55,16 @@ def handle_device_run_callback(call):
         import traceback
         bot.send_message(call.from_user.id, f'{traceback.format_exc()}')
         bot.send_message(call.from_user.id, f"Ошибка: {e}")        
+
+# Handler page scenario
+@bot.callback_query_handler(func=lambda call: call.data.startswith('device_page_'))
+def handle_scenario_run_callback_page(call):
+    page_number = int(call.data.split('_')[-1])
+    keyboard = create_DevicesKeyboard(call.from_user.username, page=page_number)
+    bot.answer_callback_query(callback_query_id=call.id, text="")
+    bot.edit_message_reply_markup(chat_id=call.message.chat.id, 
+                                message_id=call.message.message_id,
+                                reply_markup=keyboard)
 
         
 # Handler cmd control device

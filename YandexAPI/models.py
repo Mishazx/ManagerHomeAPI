@@ -36,3 +36,17 @@ class Device(models.Model):
 
     def __str__(self):
         return self.device_name
+    
+class Scenario(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    scenario_name = models.CharField(max_length=50, default='-')
+    scenario_id = models.CharField(max_length=50)
+    status = models.BooleanField(default=False)
+    
+    def save(self, *args, **kwargs):
+        if not self.scenario_id:
+            self.scenario_id = self.objects.get_next_scenario_id()
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return self.scenario_name

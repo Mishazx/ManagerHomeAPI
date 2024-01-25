@@ -10,7 +10,7 @@ from rest_framework.authtoken.models import Token
 
 # from TelegramAPI.keyboard import create_DeviceKeyboard
 
-from .models import Device, OAuthKey
+from .models import Device, OAuthKey, Scenario
 
 
 def control_device(username, id, flag, max_retries=5):
@@ -181,6 +181,33 @@ def get_all_info(username):
     return response.json()
 
 
+def get_info_scenarios(username):
+    output = get_all_info(username)
+    output = output['scenarios']
+    return output
+
+
+def register_allScenario(username):
+    try:
+        user = User.objects.get(username=username)
+
+        combined_list =  [(item['name'], item['id'], item['is_active']) for item in get_info_scenarios(username)]
+        
+        for scenario_name, scenario_id, scenario_status in combined_list:
+            existing_scenario = Scenario.objects.filter(scenario_id=scenario_id, user=user).first()
+            if not existing_scenario:
+                Scenario.objects.create(
+                    user=user,
+                    scenario_name = scenario_name,
+                    scenario_id=scenario_id,
+                    status=scenario_status,
+
+                )
+        return 'Success'
+    
+    except Exception as e:
+        return e
+
 def register_allDevice(username):
     try:
         user = User.objects.get(username=username)
@@ -210,3 +237,26 @@ def register_allDevice(username):
     
     except Exception as e:
         return e
+
+
+def start_scenario(username, scenario_id, max_retries = 5):
+    for attempt in range(max_retries):
+        try:
+            user = User.objects.get(username=username)
+            auth_key = OAuthKey.objects.get(user=user)
+            access_token = auth_key.access_token
+
+            url = f'https://api.iot.yandex.net/v1.0/scenarios/{scenario_id}/actions'
+
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'Content-Type': 'application/json'
+            }
+
+            response = requests.post(url, headers=headers)
+            return response.json()
+        
+        except RequestException as e:
+            time.sleep(0.7)
+    return None
+

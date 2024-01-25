@@ -9,10 +9,10 @@ from rest_framework.authtoken.models import Token
 
 from telebot import TeleBot, types
 
-from YandexAPI.models import Device, OAuthKey
-from YandexAPI.utils import control_device, get_reconnect_device, register_allDevice
+from YandexAPI.models import Device
+# from YandexAPI.utils import control_device, get_reconnect_device, register_allDevice
 
-from .keyboard import create_MainKeyboard, create_SettingsKeyboard, create_DevicesKeyboard
+from .keyboard import create_MainKeyboard
 
 from .utils import create_token_for_user
 
@@ -84,43 +84,8 @@ def handle_begin_callback(call):
         bot.send_message(call.message.chat.id, f'{traceback.format_exc()}')
 
 
-# Function re-register device yandex
-@bot.message_handler(func=lambda message: "Перерегистрировать все устройства" in message.text)
-def settingsMenu(message):
-    try:
-        username = message.chat.username
-        user = User.objects.get(username=username)     
-        Device.objects.filter(user=user).delete()
-        bot.send_message(message.chat.id, f"Устройства удалены")
-        output = register_allDevice(username)
-        if output == 'Success':
-            bot.send_message(message.chat.id, f'Устройства успешно добавлены')
-        else:
-            bot.send_message(message.chat.id, output)
-            
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Ошибка: {e}")    
-
-
-# Function handle 'Main menu"
-@bot.message_handler(func=lambda message: 'Главное меню' in message.text)
-def mainMenu(message):
-    try:
-        keyboard = create_MainKeyboard()
-        bot.send_message(message.chat.id, f'Вы находитесь в главном меню', reply_markup=keyboard)
-
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Ошибка: {e}")
-
-
-# Function handle 'Settings menu'
-@bot.message_handler(func=lambda message: 'Настройки' in message.text)
-def settingsMenu(message):
-    try:
-        keyboard = create_SettingsKeyboard(message.chat.username)
-        bot.send_message(message.chat.id, f'Вы находитесь в меню настроек',reply_markup=keyboard)
-
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Ошибка: {e}")
-
+from .handler.LinkerYandex import *
 from .handler.MenuDevices import *
+from .handler.MenuHandler import *
+from .handler.SettingsHandler import *
+from .handler.ScenarioHandler import *
