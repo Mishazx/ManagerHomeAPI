@@ -168,3 +168,5 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
     ],
 }
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'

@@ -20,6 +20,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('yaapi/', include('YandexAPI.urls')), 
     path('tg/', include('TelegramAPI.urls')),
     # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
