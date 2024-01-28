@@ -6,3 +6,4 @@ psycopg2-binary
 telebot
 gunicorn
 djangorestframework_simplejwt
+django-cors-headers

@@ -2,15 +2,9 @@ from django.db import IntegrityError
 from django.http import JsonResponse
 from django.views import View
 from django.conf import settings
-
 from django.contrib.auth.models import User
 
-from rest_framework.authtoken.models import Token
-
 from telebot import TeleBot, types
-
-from YandexAPI.models import Device
-# from YandexAPI.utils import control_device, get_reconnect_device, register_allDevice
 
 from .keyboard import create_MainKeyboard
 
@@ -22,7 +16,7 @@ url_domain = settings.DOMAIN_URL
 
 
 bot = TeleBot(token)
-url_tg_webhook = f'{url_domain}/tg/webhook/'
+url_tg_webhook = f'{url_domain}/api/telegram/webhook/'
 bot.set_webhook(url=url_tg_webhook)
 
 

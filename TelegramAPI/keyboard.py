@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from YandexAPI.models import Device, OAuthKey, Scenario
 
 
+# Func create Main Keyboard
 def create_MainKeyboard():
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
 
@@ -39,10 +40,11 @@ def create_MainKeyboard():
 
 #     return markup
 
+
+# Func create Devices Keyboard
 def create_DevicesKeyboard(username, page=1, items_per_page=5):
     user = User.objects.get(username=username)
     user_devices = Device.objects.filter(user=user)
-    
     
     start_index = (page - 1) * items_per_page
     end_index = start_index + items_per_page
@@ -67,20 +69,19 @@ def create_DevicesKeyboard(username, page=1, items_per_page=5):
 
     pagination_buttons = []
     if page > 1:
-        pagination_buttons.append(types.InlineKeyboardButton(text="<<", callback_data=f'device_page_{page - 1}'))
+        pagination_buttons.append(types.InlineKeyboardButton(text="⬅️", callback_data=f'device_page_{page - 1}'))
     if page < total_pages:
-        pagination_buttons.append(types.InlineKeyboardButton(text=">>", callback_data=f'device_page_{page + 1}'))
-
+        pagination_buttons.append(types.InlineKeyboardButton(text="➡️", callback_data=f'device_page_{page + 1}'))
     if pagination_buttons:
         keyboard.row(*pagination_buttons)
 
     return keyboard
 
 
+# Func create Device Keyboard
 def create_DeviceKeyboard(device_data):
     keyboard = types.InlineKeyboardMarkup()
     device_name = device_data[0]
-   # keyboard.add(types.InlineKeyboardButton(text=str(state)))
     print(device_data)
     if len(device_data) > 2:
         if device_data[2]:
@@ -109,6 +110,7 @@ def create_DeviceKeyboard(device_data):
 #     return keyboard
 
 
+# Func create Scenarios Keyboard
 def create_ScenariosKeyboard(username, page=1, items_per_page=5):
     user = User.objects.get(username=username)
     scenarios = Scenario.objects.filter(user=user)
@@ -126,7 +128,6 @@ def create_ScenariosKeyboard(username, page=1, items_per_page=5):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(*scenarios_button_list)
 
-    # Добавление кнопок для пагинации
     total_scenarios = scenarios.count()
     total_pages = (total_scenarios // items_per_page) + (1 if total_scenarios % items_per_page > 0 else 0)
 
@@ -135,13 +136,13 @@ def create_ScenariosKeyboard(username, page=1, items_per_page=5):
         pagination_buttons.append(types.InlineKeyboardButton(text="<<", callback_data=f'scenario_page_{page - 1}'))
     if page < total_pages:
         pagination_buttons.append(types.InlineKeyboardButton(text=">>", callback_data=f'scenario_page_{page + 1}'))
-
     if pagination_buttons:
         keyboard.add(*pagination_buttons)
 
     return keyboard
 
 
+# Func create Settings Keyboard
 def create_SettingsKeyboard(username):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True)
     user = User.objects.get(username=username)
@@ -157,7 +158,6 @@ def create_SettingsKeyboard(username):
     else:
         buttonLink = types.KeyboardButton("Привязать аккаунт 'Яндекс'")
         keyboard.add(buttonLink)
-
 
     buttonMain = types.KeyboardButton("Главное меню")
     keyboard.add(buttonMain)

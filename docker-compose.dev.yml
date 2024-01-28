@@ -15,7 +15,7 @@ services:
     depends_on:
       - db_dev
     env_file:
-      - .dev.env 
+      - .env 
     networks:
       - my_iot_api_dev
 
@@ -26,7 +26,32 @@ services:
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
     env_file:
-      - .dev.env
+      - .env
+    networks:
+      - my_iot_api_dev
+
+  front:
+    container_name:  my_iot_api_front_dev
+    build:
+      context: ..
+      dockerfile: ManagerHomeAPI/Dockerfile.front
+    ports:
+      - "13000:3000"
+    volumes:
+      - ../front:/app/
+    networks:
+      - my_iot_api_dev
+
+  # Сервер Nginx
+  nginx:
+    image: nginx:latest
+    container_name: my_iot_api_nginx_dev
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "30000:80"
+    depends_on:
+      - web
     networks:
       - my_iot_api_dev
 

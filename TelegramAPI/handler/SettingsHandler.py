@@ -38,7 +38,5 @@ def settingsMenu(message):
         else:
             bot.send_message(message.chat.id, output)
 
-    
-            
     except Exception as e:
         bot.send_message(message.chat.id, f"Ошибка: {e}")    

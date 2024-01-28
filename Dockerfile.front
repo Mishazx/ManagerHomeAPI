@@ -1,0 +1,16 @@
+FROM node:14
+
+WORKDIR /app
+
+# COPY ../front/ /app/
+# COPY ../front /app/
+
+COPY ../front/package*.json .
+
+
+COPY ../front .
+
+RUN npm install
+
+CMD ["npm", "start"]
+
