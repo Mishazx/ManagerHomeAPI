@@ -33,11 +33,11 @@ DOMAIN_URL = os.getenv("DOMAIN_URL")
 # Yandex OAUTH Keys
 YANDEX_OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID_YA")
 YANDEX_OAUTH2_SECRET_KEY = os.getenv("SECRET_KEY_YA")
-YANDEX_OAUTH2_REDIRECT_URI = f'{DOMAIN_URL}/yaapi/callback/'
+YANDEX_OAUTH2_REDIRECT_URI = f'{DOMAIN_URL}/api/yandex/callback/'
 
 # Token Telegram Bot
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_BOT_WEBHOOK =  f'{DOMAIN_URL}/tg/webhook/'
+TELEGRAM_BOT_WEBHOOK =  f'{DOMAIN_URL}/api/telegram/webhook/'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
