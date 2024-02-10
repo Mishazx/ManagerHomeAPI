@@ -4,6 +4,7 @@ from TelegramAPI.views import bot
 from YandexAPI.models import Scenario
 from YandexAPI.utils import get_info_scenarios, start_scenario
 
+
 # Function re-register device yandex
 @bot.message_handler(func=lambda message: "Все сценарии" in message.text)
 def scenarioMenu(message):
@@ -15,6 +16,7 @@ def scenarioMenu(message):
         import traceback
         bot.send_message(message.chat.id, f'{traceback.format_exc()}')
         bot.send_message(message.chat.id, f"Ошибка: {e}")
+        
         
 # Handler menu scenario
 @bot.callback_query_handler(func=lambda call: call.data.startswith('scenario_callback_'))
@@ -53,6 +55,7 @@ def handle_scenario_run_callback(call):
         bot.send_message(call.from_user.id, f'{traceback.format_exc()}')
         bot.send_message(call.from_user.id, f"Ошибка: {e}")
 
+
 # Handler page scenario
 @bot.callback_query_handler(func=lambda call: call.data.startswith('scenario_page_'))
 def handle_scenario_run_callback_page(call):
@@ -62,3 +65,4 @@ def handle_scenario_run_callback_page(call):
     bot.edit_message_reply_markup(chat_id=call.message.chat.id, 
                                 message_id=call.message.message_id,
                                 reply_markup=keyboard)
+    

@@ -62,7 +62,7 @@ INSTALLED_APPS = [
     'TelegramAPI',
     'API',
     
-    'corsheaders',
+    # 'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +149,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = 'devices/'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -162,12 +164,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-    ],
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework.renderers.JSONRenderer',
+    # ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
     ],
@@ -175,15 +179,28 @@ REST_FRAMEWORK = {
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-# CORS_ALLOW_ALL_ORIGINS = True
+# SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://localhost:21000",
-#     "http://192.168.1.8:3000",
-#     "https://dev.iot.mishazx.ru"
-# ]
+# Sets the session duration in seconds (in this case, 1209600 seconds or 2 weeks)
+SESSION_COOKIE_AGE = 1209600
 
-# CORS_ALLOW_CREDENTIALS = True
+# Sets the path for which session cookies will be set
+SESSION_COOKIE_PATH = '/'
 
-# CORS_ORIGIN_ALLOW_ALL = True
+# Sets the domain for which session cookies will be set
+SESSION_COOKIE_DOMAIN = None  # Or specify your domain
+
+# Устанавливает область видимости куков сессии
+SESSION_COOKIE_SECURE = False  # Установите в True для использования только по HTTPS
+SESSION_COOKIE_HTTPONLY = True
+
+# Используйте 'Lax' для более мягкой защиты от CSRF или 'Strict' для строгой защиты
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CSRF_TRUSTED_ORIGINS=['https://dev.iot.mishazx.ru', 'http://192.168.1.8:13000', 'http://localhost:13000']

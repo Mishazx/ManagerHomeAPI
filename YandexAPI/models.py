@@ -37,6 +37,7 @@ class Device(models.Model):
     def __str__(self):
         return self.device_name
     
+
 class Scenario(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     scenario_name = models.CharField(max_length=50, default='-')

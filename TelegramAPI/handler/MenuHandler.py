@@ -1,6 +1,7 @@
 from TelegramAPI.views import bot
 from TelegramAPI.keyboard import create_MainKeyboard, create_SettingsKeyboard
 
+
 # Function handle 'Main menu"
 @bot.message_handler(func=lambda message: 'Главное меню' in message.text)
 def mainMenu(message):

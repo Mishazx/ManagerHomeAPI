@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from YandexAPI.utils import register_allDevice, register_allScenario
 
 
-
 # Function re-register device yandex
 @bot.message_handler(func=lambda message: "Перерегистрировать все устройства" in message.text)
 def settingsMenu(message):
@@ -40,3 +39,4 @@ def settingsMenu(message):
 
     except Exception as e:
         bot.send_message(message.chat.id, f"Ошибка: {e}")    
+        

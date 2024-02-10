@@ -11,6 +11,7 @@ class DeviceAdmin(admin.ModelAdmin):
     list_display = ( 'device_name', 'device_id', 'device_type', 'user', 'online')
     search_fields = ('device_name', 'device_id')
     
+    
 class ScenarionAdmin(admin.ModelAdmin):
     list_display = ('scenario_name', 'scenario_id', 'user', 'status')
     

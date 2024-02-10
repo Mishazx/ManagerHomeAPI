@@ -30,17 +30,17 @@ services:
     networks:
       - my_iot_api_dev
 
-  front:
-    container_name:  my_iot_api_front_dev
-    build:
-      context: ..
-      dockerfile: ManagerHomeAPI/Dockerfile.front
-    ports:
-      - "13000:3000"
-    volumes:
-      - ../front:/app/
-    networks:
-      - my_iot_api_dev
+  # front:
+  #   container_name:  my_iot_api_front_dev
+  #   build:
+  #     context: ..
+  #     dockerfile: ManagerHomeAPI/Dockerfile.front
+  #   ports:
+  #     - "13000:3000"
+  #   volumes:
+  #     - ../front:/app/
+  #   networks:
+  #     - my_iot_api_dev
 
   # Сервер Nginx
   nginx:

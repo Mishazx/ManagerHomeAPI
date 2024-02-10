@@ -41,17 +41,17 @@ services:
     networks:
     - my_iot_api
 
-  front:
-    container_name:  my_iot_api_front
-    build:
-      context: ..
-      dockerfile: ManagerHomeAPI/Dockerfile.front
-    ports:
-      - "20002:3000"
-    volumes:
-      - ../front:/app/
-    networks:
-      - my_iot_api
+  # front:
+  #   container_name:  my_iot_api_front
+  #   build:
+  #     context: ..
+  #     dockerfile: ManagerHomeAPI/Dockerfile.front
+  #   ports:
+  #     - "20002:3000"
+  #   volumes:
+  #     - ../front:/app/
+  #   networks:
+  #     - my_iot_api
 
 volumes:
   postgres_data:

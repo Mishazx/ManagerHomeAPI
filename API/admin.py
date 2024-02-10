@@ -9,4 +9,5 @@ class SessionAdmin(admin.ModelAdmin):
     def show_active_sessions(modeladmin, request, queryset):
         call_command('show_sessions')
 
+
 admin.site.register(Session, SessionAdmin)

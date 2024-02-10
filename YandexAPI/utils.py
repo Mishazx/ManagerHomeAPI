@@ -208,6 +208,7 @@ def register_allScenario(username):
     except Exception as e:
         return e
 
+
 def register_allDevice(username):
     try:
         user = User.objects.get(username=username)
@@ -259,4 +260,3 @@ def start_scenario(username, scenario_id, max_retries = 5):
         except RequestException as e:
             time.sleep(0.7)
     return None
-

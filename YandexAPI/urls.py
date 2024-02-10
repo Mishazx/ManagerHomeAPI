@@ -7,5 +7,6 @@ from .views import get_authorization_code, exchange_code_for_token, register_all
 urlpatterns = [
     path('oauth/', get_authorization_code, name='get_authorization_code'),
     path('callback/', exchange_code_for_token, name='callback'), 
-    path('register/', register_all_devices, name='register_all_devices')
+    path('register/', register_all_devices, name='register_all_devices'),
+
 ]
